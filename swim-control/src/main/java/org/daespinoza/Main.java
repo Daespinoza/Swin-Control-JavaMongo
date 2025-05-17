@@ -10,7 +10,7 @@ import org.bson.*;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        String connectionString = "mongodb+srv://<username>:<password>@swimcontrol-cluster00.otktrtc.mongodb.net/?retryWrites=true&w=majority&appName=SwimControl-Cluster00";
+        String connectionString = AppConfig.get("db.url");
         ServerApi serverApi = ServerApi.builder()
                 .version(ServerApiVersion.V1)
                 .build();
