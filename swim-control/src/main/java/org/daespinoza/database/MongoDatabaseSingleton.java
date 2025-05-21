@@ -8,73 +8,87 @@ import com.mongodb.client.model.Projections;
 import org.bson.conversions.Bson;
 import org.daespinoza.AppConfig;
 
+import java.util.ArrayList;
 import java.util.List;
+import org.daespinoza.model.Swimmer;
 
 public class MongoDatabaseSingleton implements DatabaseInterface {
 
-    final private MongoDatabase database;
     private static MongoDatabaseSingleton instance;
+    private MongoClient mongoClient;
+    private MongoDatabase database;
 
     private MongoDatabaseSingleton() {
-        MongoDatabase database = null;
-        ServerApi serverApi = ServerApi.builder()
-                .version(ServerApiVersion.V1)
-                .build();
-        MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(AppConfig.get("db.url")))
-                .serverApi(serverApi)
-                .build();
-        try (MongoClient mongoClient = MongoClients.create(settings)) {
-            try {
-                // Send a ping to confirm a successful connection
-                database = mongoClient.getDatabase("admin");
-                database.runCommand(new Document("ping", 1));
-                System.out.println("Pinged your deployment. You successfully connected to MongoDB!");
-            } catch (MongoException e) {
-                //noinspection CallToPrintStackTrace
-                e.printStackTrace();
-            }
-            finally {
-                this.database = database;
-            }
-        }
+        establishConnection();
     }
 
     public static MongoDatabaseSingleton getNoSQLInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new MongoDatabaseSingleton();
         }
         return instance;
     }
 
-    @Override
-    public <T> List<T> getAll() {
+    private void establishConnection() {
+        String connectionString = AppConfig.get("db.url");
 
-        String message = "Null";
+        ServerApi serverApi = ServerApi.builder()
+                .version(ServerApiVersion.V1)
+                .build();
+
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(new ConnectionString(connectionString))
+                .serverApi(serverApi)
+                .build();
+
+        mongoClient = MongoClients.create(settings);
+
+        try {
+            database = mongoClient.getDatabase("Swim-Control");
+            database.runCommand(new Document("ping", 1));
+            System.out.println("✔ Connected to MongoDB successfully.");
+        } catch (MongoException e) {
+            e.printStackTrace();
+            System.out.println("❌ Error connecting to MongoDB.");
+        }
+    }
+
+    public MongoDatabase getDatabase() {
+        return database;
+    }
+
+    public void closeConnection() {
+        if (mongoClient != null) {
+            mongoClient.close();
+            System.out.println("🔌 Connection closed.");
+        }
+    }
+
+    @Override
+    public List<Swimmer> getAll() {
+
+        List<Swimmer> swimmers = new ArrayList<>();
 
         MongoCollection<Document> collection = database.getCollection("swimmers");
 
-        Bson projectionFields = Projections.fields(
-                Projections.include("Name", "Phone", "email"),
-                Projections.excludeId());
-
         FindIterable<Document> docs = collection.find()
-                .projection(projectionFields)
                 .sort(Sorts.ascending("Name"));
 
+        for (Document doc : docs) {
+            String id = doc.getObjectId("_id").toHexString();
+            String name = doc.getString("Name");
+            String phone = doc.getString("Phone");
+            String email = doc.getString("email");
 
-        Document doc = collection.find()
-                .projection(projectionFields)
-                .sort(Sorts.ascending("Name"))
-                .first();
-
-        // @TODO: move this for main
-        if (doc == null) {
-            System.out.println("No results found.");
-        } else {
-            System.out.println("Find !! ");
+            swimmers.add(new Swimmer(id, name, phone, email));
         }
 
-        return doc.values();
+        if (swimmers.isEmpty()) {
+            System.out.println("No results found.");
+        } else {
+            System.out.println("Found " + swimmers.size() + " swimmers.");
+        }
+
+        return swimmers;
     }
 }
