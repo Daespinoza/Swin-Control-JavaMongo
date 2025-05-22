@@ -22,5 +22,15 @@ public class Main {
         for (Swimmer swimmer : swimmers) {
             System.out.println(swimmer);
         }
+
+        Swimmer newSwimmer = new Swimmer("David Espinoza", "8888-8888", "david@example.com");
+        db.insert(newSwimmer);
+
+        System.out.println("... Nadador registrado.");
+
+        swimmers = db.getAll();
+        for (Swimmer swimmer : swimmers) {
+            System.out.println(swimmer);
+        }
     }
 }

@@ -91,4 +91,29 @@ public class MongoDatabaseSingleton implements DatabaseInterface {
 
         return swimmers;
     }
+
+    @Override
+    public <T> void insert(T item) {
+        if (item instanceof Swimmer) {
+            MongoCollection<Document> collection = database.getCollection("swimmers");
+            Swimmer swimmer = (Swimmer) item;
+
+            Document doc = new Document("Name", swimmer.getName())
+                    .append("Phone", swimmer.getPhone())
+                    .append("email", swimmer.getEmail());
+
+            collection.insertOne(doc);
+            System.out.println("Swimmer inserted!");
+        }
+    }
+
+    @Override
+    public <T> void update(T item){
+
+    }
+
+    @Override
+    public <T> void delete(T item){
+
+    }
 }
