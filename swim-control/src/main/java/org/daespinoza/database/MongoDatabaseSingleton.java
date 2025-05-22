@@ -5,6 +5,7 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.*;
 import com.mongodb.client.model.Projections;
@@ -136,7 +137,25 @@ public class MongoDatabaseSingleton implements DatabaseInterface {
     }
 
     @Override
-    public <T> void delete(T item){
+    public <T> void delete(T item) {
+        if (item instanceof Swimmer) {
+            MongoCollection<Document> collection = database.getCollection("swimmers");
 
+            String id = ((Swimmer) item).getId();
+            if (id == null || id.isEmpty()) {
+                System.out.println("ID is required to delete a swimmer.");
+                return;
+            }
+
+            Bson filter = Filters.eq("_id", new ObjectId(id));
+
+            DeleteResult result = collection.deleteOne(filter);
+
+            if (result.getDeletedCount() > 0) {
+                System.out.println("Swimmer deleted successfully.");
+            } else {
+                System.out.println("No swimmer was deleted. Check the ID.");
+            }
+        }
     }
 }

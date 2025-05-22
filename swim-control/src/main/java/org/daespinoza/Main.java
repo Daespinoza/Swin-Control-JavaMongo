@@ -48,5 +48,16 @@ public class Main {
         for (Swimmer swimmer : swimmers) {
             System.out.println(swimmer.toString());
         }
+
+        if (!swimmers.isEmpty()) {
+            Swimmer toDelete = swimmers.get(0);
+            System.out.println("\nEliminando nadador: " + toDelete.getName() + " (ID: " + toDelete.getId() + ")");
+            db.delete(toDelete);
+        }
+
+        swimmers = db.getAll();
+        for (Swimmer swimmer : swimmers) {
+            System.out.println(swimmer.toString());
+        }
     }
 }
