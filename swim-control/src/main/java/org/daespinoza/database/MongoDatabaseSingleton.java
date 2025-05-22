@@ -2,10 +2,14 @@ package org.daespinoza.database;
 
 import com.mongodb.*;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.*;
 import com.mongodb.client.model.Projections;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.daespinoza.AppConfig;
 
 import java.util.ArrayList;
@@ -109,6 +113,25 @@ public class MongoDatabaseSingleton implements DatabaseInterface {
 
     @Override
     public <T> void update(T item){
+        if( item instanceof Swimmer) {
+            MongoCollection<Document> collection = database.getCollection("swimmers");
+
+            Bson filter = Filters.eq("_id", new ObjectId(((Swimmer) item).getId()));
+
+            Bson updates = Updates.combine(
+                    Updates.set("Name", ((Swimmer) item).getName()),
+                    Updates.set("Phone", ((Swimmer) item).getPhone()),
+                    Updates.set("email", ((Swimmer) item).getEmail())
+            );
+
+            UpdateResult result = collection.updateOne(filter, updates);
+
+            if (result.getModifiedCount() > 0) {
+                System.out.println("Swimmer updated successfully.");
+            } else {
+                System.out.println("No swimmer was updated. Check the ID.");
+            }
+        }
 
     }
 

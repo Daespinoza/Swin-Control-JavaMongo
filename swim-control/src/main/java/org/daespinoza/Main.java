@@ -20,17 +20,33 @@ public class Main {
         System.out.println("Base de datos activa: " + db.getDatabase().getName());
 
         for (Swimmer swimmer : swimmers) {
-            System.out.println(swimmer);
+            System.out.println(swimmer.toString());
         }
 
-        Swimmer newSwimmer = new Swimmer("David Espinoza", "8888-8888", "david@example.com");
+        Swimmer newSwimmer = new Swimmer("Daniel Espinoza", "8888-8888", "daniel001@example.com");
         db.insert(newSwimmer);
 
         System.out.println("... Nadador registrado.");
 
         swimmers = db.getAll();
         for (Swimmer swimmer : swimmers) {
-            System.out.println(swimmer);
+            System.out.println(swimmer.toString());
+        }
+
+        // mod
+        for (Swimmer swimmer : swimmers) {
+            if (swimmer.getEmail().equals("daniel001@example.com")) {
+
+                swimmer.setPhone("8999-9999");
+
+                db.update(swimmer);
+                System.out.println("... Teléfono actualizado para: " + swimmer.getName());
+            }
+        }
+
+        swimmers = db.getAll();
+        for (Swimmer swimmer : swimmers) {
+            System.out.println(swimmer.toString());
         }
     }
 }
