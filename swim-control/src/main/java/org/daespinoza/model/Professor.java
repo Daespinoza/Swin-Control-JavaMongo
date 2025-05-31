@@ -1,40 +1,35 @@
 package org.daespinoza.model;
-import java.time.LocalDate;
 
-public class Swimmer {
+public class Professor {
     private String id;
     private String name;
-    private String phone;
     private String email;
+    private String phone;
     private String notes;
-    private LocalDate reg_date;
 
-    public Swimmer(String name, String phone, String email, String notes) {
+    public Professor(String name, String phone, String email, String notes) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.notes = notes;
-        this.reg_date = LocalDate.now();
     }
 
-    public Swimmer(String id, String name, String phone, String email, String notes) {
+    public Professor(String id, String name, String phone, String email, String notes) {
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.notes = notes;
-        this.reg_date = LocalDate.now();
     }
 
     @Override
     public String toString() {
-        return "Swimmer{" +
+        return "Professor{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
                 ", notes='" + notes + '\'' +
-                ", register='" + reg_date + '\'' +
                 '}';
     }
 
@@ -43,7 +38,6 @@ public class Swimmer {
     public String getPhone() { return phone; }
     public String getEmail() { return email; }
     public String getNotes() { return notes; }
-    public LocalDate getReg_date() { return reg_date; }
     public String getId() {return id; }
 
     public void setName(String name) { this.name = name; }
@@ -51,5 +45,5 @@ public class Swimmer {
     public void setEmail(String email) { this.email = email; }
     public void setNotes(String notes) { this.notes = notes; }
     public void setId(String id) { this.id = id; }
-    public void setReg_date(LocalDate ld) { this.reg_date = ld; }
 }
+
